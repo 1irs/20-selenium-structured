@@ -6,19 +6,31 @@ from page_object.search_page import SearchPage, ProductInfo
 from webdriver_factory import WebDriverFactory
 
 
-class SearchOrderTest(unittest.TestCase):
+class SearchOrder2Test(unittest.TestCase):
 
-    def setUp(self) -> None:
-        """Предустановка. Выполняется перед каждым тестом."""
-        self.driver = WebDriverFactory.get_driver()
+    driver = None
+    search_page = None
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Предустановка. Выполняется один раз перед всеми тестами."""
+        cls.driver = WebDriverFactory.get_driver()
 
         # Предусловие: открыта страница поиска.
-        self.search_page = SearchPage(self.driver)
-        self.search_page.open()
+        cls.search_page = SearchPage(cls.driver)
+        cls.search_page.open()
+
+    def setUp(self) -> None:
+        self.search_page = SearchOrder2Test.search_page
+        self.driver = SearchOrder2Test.driver
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        """Выполняется один раз после всех тестов"""
+        cls.driver.quit()
 
     def tearDown(self) -> None:
-        """Выполняется после каждого теста"""
-        self.driver.quit()
+        self.driver.save_screenshot('test-reports/' + self.id() + '.png')
 
     def test_price_low_high(self):
         """От дешевых к дорогим"""

@@ -2,12 +2,8 @@ import unittest
 from decimal import Decimal
 from typing import List
 
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-
-from webdriver_manager.chrome import ChromeDriverManager
-
 from page_object.search_page import SearchPage, ProductInfo
+from webdriver_factory import WebDriverFactory
 
 
 class SearchOrder2Test(unittest.TestCase):
@@ -18,19 +14,22 @@ class SearchOrder2Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Предустановка. Выполняется один раз перед всеми тестами."""
-        cls.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+        cls.driver = WebDriverFactory.get_driver()
 
         # Предусловие: открыта страница поиска.
         cls.search_page = SearchPage(cls.driver)
         cls.search_page.open()
 
     def setUp(self) -> None:
-        self.driver = SearchOrder2Test.search_page
+        self.driver = SearchOrder2Test.driver
 
     @classmethod
     def tearDownClass(cls) -> None:
         """Выполняется один раз после всех тестов"""
         cls.driver.quit()
+
+    def tearDown(self) -> None:
+        self.driver.save_screenshot('/test-reports/' + self.id() + '.png')
 
     def test_price_low_high(self):
         """От дешевых к дорогим"""

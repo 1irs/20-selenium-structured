@@ -1,0 +1,19 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  tests:
+    image: my_selenium_tests:latest
+    links:
+      - "browserless"
+    depends_on:
+      - "browserless"
+    environment:
+      REMOTE_DRIVER_HOST: "browserless"
+  browserless:
+    image: browserless/chrome:latest
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://browserless:3000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 2
